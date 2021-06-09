@@ -9,8 +9,9 @@ class OrderStatus(models.Model):
 class Order(models.Model):
     user         = models.ForeignKey('users.User', on_delete=models.CASCADE)
     order_status = models.ForeignKey(OrderStatus, on_delete=models.CASCADE)
+    recipient_info = models.OneToOneField('RecipientInfo', on_delete=models.CASCADE)
     order_time   = models.DateTimeField(null=True)
-
+    
     class Meta:
         db_table = 'orders'
 
@@ -27,7 +28,6 @@ class RecipientInfo(models.Model):
     name         = models.CharField(max_length=45)
     phone_number = models.CharField(max_length=15)
     request      = models.CharField(max_length=100)
-    order        = models.OneToOneField(Order, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'recipient_infoes'
