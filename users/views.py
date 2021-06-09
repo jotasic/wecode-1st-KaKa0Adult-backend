@@ -1,7 +1,7 @@
-import json, re, bcrypt, jwt
+import json, re, bcrypt
 
-from django.views import View
-from django.http import JsonResponse
+from django.views     import View
+from django.http      import JsonResponse
 from django.db.models import Q
 
 from .models import User
@@ -9,8 +9,8 @@ from .models import User
 class SignupView(View):
     def post(self, request):
         try:
-            re_email    = '/[a-zA-Z0-9.-_+!]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]{2,}(?:.[a-zA-Z0-9]{2,3})?/'
-            re_password = '/[a-zA-Z0-9]{5,100}/'
+            re_email    = '[a-zA-Z0-9.-_+!]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]{2,}(?:.[a-zA-Z0-9]{2,3})?'
+            re_password = '[a-zA-Z0-9]{5,100}'
 
             data         = json.loads(request.body)
             nickname     = data['nickname']
@@ -21,18 +21,18 @@ class SignupView(View):
             birth        = data['birth']
 
             if not re.match(re_email, email):
-                return JsonResponse({'message':'THE EMAIL IS NOT APPROPRIATE'}, status=400)
+                return JsonResponse({'message':'THE_EMAIL_IS_NOT_APPROPRIATE'}, status=400)
         
             if not re.match(re_password, password):
-                return JsonResponse({'message': 'THE PASSWORD IS NOT APPROPRIATE'}, status=400)
-        
+                return JsonResponse({'message': 'THE_PASSWORD_IS_NOT_APPROPRIATE'}, status=400)
+            
             if User.objects.filter(
                 Q(nickname     = nickname)|
                 Q(email        = email)|
                 Q(phone_number = phone_number)).exists():
                 return JsonResponse({'message':'DUPLICATED_CLIENT_INFORMATION'}, status=409)
             
-            hash_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gengalt()).decode('utf-8')
+            hash_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
             User.objects.create(
                 nickname     = nickname,
