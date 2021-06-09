@@ -8,8 +8,8 @@ class OrderStatus(models.Model):
 
 class Order(models.Model):
     user         = models.ForeignKey('users.User', on_delete=models.CASCADE)
-    order_time   = models.DateTimeField(null=True)
     order_status = models.ForeignKey(OrderStatus, on_delete=models.CASCADE)
+    order_time   = models.DateTimeField(null=True)
 
     class Meta:
         db_table = 'orders'

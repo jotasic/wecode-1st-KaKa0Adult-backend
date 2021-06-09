@@ -20,6 +20,7 @@ class Product(models.Model):
     sell_count = models.IntegerField()
     price      = models.DecimalField(max_digits=9, decimal_places=3)
     content    = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'products'
