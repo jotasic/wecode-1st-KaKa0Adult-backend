@@ -7,7 +7,7 @@ class User(models.Model):
     phone_number = models.CharField(max_length=15, unique=True)
     gender       = models.CharField(max_length=5)
     birth        = models.CharField(max_length=12)
-    product      = models.ManyToManyField('products.Product', through='Like')
+    like         = models.ManyToManyField('products.Product', through='Like')
 
     class Meta:
         db_table = 'users'
