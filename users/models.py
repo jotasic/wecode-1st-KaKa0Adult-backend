@@ -13,7 +13,7 @@ class User(models.Model):
         db_table = 'users'
 
 class Like(models.Model):
-    user    = models.ForeignKey(User, on_delete=models.CASCADE)
+    user    = models.ForeignKey(User, on_delete=models.CASCADE, related_name='origin_like')
     product = models.ForeignKey('products.Product', on_delete=models.CASCADE)
 
     class Meta:
