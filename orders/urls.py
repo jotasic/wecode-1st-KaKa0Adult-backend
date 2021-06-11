@@ -3,5 +3,6 @@ from django.urls import path
 from .views import BasketView
 
 urlpatterns = [
-    path('/basket/product/<int:product_id>', BasketView.as_view()),
+    path('/order-item', BasketView.as_view()),
+    path('/order-items/<int:order_item>', BasketView.as_view()),
 ]

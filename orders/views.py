@@ -5,34 +5,31 @@ from django.views           import View
 from django.http            import JsonResponse
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-from .models         import Order, OrderStatus, OrderList
+from .models         import Order, OrderStatus, OrderItem
 from products.models import Product
 from users.utils     import login_decorator
 
 class BasketView(View):
     @login_decorator
-    def post(self, request, product_id):
+    def post(self, request):
         try:
             data = json.loads(request.body)
 
+            product       = data['id']            
             product_count = data['count']
 
-            product      = Product.objects.get(id=product_id)
-            user         = request.user
-            order_status = OrderStatus.objects.get(status='BASKET')
+            if not Product.objects.filter(id=product).exists():
+                return JsonResponse({'message':'PRODUCT_DOES_NOT_EXIST'}, status=400)
             
             order, created = Order.objects.get_or_create(
-                user=user, order_status=order_status,
-                defaults={
-                    'user':user, 
-                    'order_status':order_status,
-                } 
+                user         = request.user,
+                order_status = OrderStatus.BASKET
             )
 
-            if OrderList.objects.filter(product=product, order=order).exists():
+            if OrderItem.objects.filter(product_id=product, order=order).exists():
                 return JsonResponse({'message':'EXIST_ITEM'}, status=400)    
 
-            OrderList.objects.create(product=product, order=order, count=product_count)
+            OrderItem.objects.create(product_id=product, order=order, count=product_count)
 
             return JsonResponse({'message':'SUCCESS'}, status=201)
 
@@ -41,23 +38,22 @@ class BasketView(View):
         
         except MultipleObjectsReturned:
             return JsonResponse({'message':'MULTIPLE_OBJECT_RETURNED'}, status=400)
-        
-        except ObjectDoesNotExist:
-            return JsonResponse({'message':'DOES_NOT_EXIST'}, status=401)
 
         except JSONDecodeError:
             return JsonResponse({'message':'DECODE_ERROR'}, status=400)
 
     @login_decorator
-    def delete(self, request, product_id):
+    def delete(self, request, order_item):
         try:
-            product      = Product.objects.get(id=product_id)
-            user         = request.user
-            order_status = OrderStatus.objects.get(status='BASKET')
+            order_item = OrderItem.objects.get(id=order_item)
 
-            order = Order.objects.get(user=user, order_status=order_status)
+            if order_item.order.user != request.user:
+                return JsonResponse({'message':'INVALID_ORDER_ITEMS'})
 
-            OrderList.objects.get(order=order, product=product).delete()
+            if order_item.order.order_status.id != OrderStatus.BASKET:
+                return JsonResponse({'message':'ORDER_DOSE_NOT_EXIST'}, status=400)
+
+            order_item.delete()
 
             return JsonResponse({'message':'SUCCESS'}, status=200)
 
@@ -66,3 +62,5 @@ class BasketView(View):
 
         except ObjectDoesNotExist:
             return JsonResponse({'message':'DOES_NOT_EXIST'}, status=401)
+
+        

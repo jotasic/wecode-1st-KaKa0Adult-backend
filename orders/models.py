@@ -1,6 +1,9 @@
 from django.db import models
 
 class OrderStatus(models.Model):
+    BASKET  = 3
+    PAYMENT = 2
+
     status = models.CharField(max_length=45)
 
     class Meta:
@@ -15,13 +18,13 @@ class Order(models.Model):
     class Meta:
         db_table = 'orders'
 
-class OrderList(models.Model):
+class OrderItem(models.Model):
     order   = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey('products.Product', on_delete=models.CASCADE)
     count   = models.IntegerField()
 
     class Meta:
-        db_table = 'order_lists'
+        db_table = 'order_items'
     
 class RecipientInfo(models.Model):
     address      = models.CharField(max_length=100)
