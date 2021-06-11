@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 from pathlib import Path
 
-from my_settings import SECRET_KEY, DATABASES
+from my_settings import ALGORITHM, SECRET_KEY, DATABASES
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,6 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+ALGORITHM = ALGORITHM
 
 # Application definition
 
