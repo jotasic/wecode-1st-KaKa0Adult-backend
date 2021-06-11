@@ -62,7 +62,7 @@ class BasketView(View):
             return JsonResponse({'message':'SUCCESS'}, status=200)
 
         except MultipleObjectsReturned:
-            return JsonResponse({'message':'MULTIPLE_OBJECT_RETURNED'}, status=500)
+            return JsonResponse({'message':'MULTIPLE_OBJECT_RETURNED'}, status=400)
 
         except ObjectDoesNotExist:
             return JsonResponse({'message':'DOES_NOT_EXIST'}, status=401)
