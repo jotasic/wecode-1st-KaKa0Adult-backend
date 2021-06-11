@@ -8,16 +8,17 @@ from django.db.models             import Count
 
 from products.models              import Product
 from users.models                 import Like
+from users.utils                  import login_decorator
 
-def filter_in_preserve(queryset: QuerySet, field: str, values: list) -> QuerySet:
+def filter_order(queryset: QuerySet, field: str, values: list) -> QuerySet:
     preserved = Case(*[When(**{field : val}, then=pos) 
                     for pos, val in enumerate(values)])
     return queryset.filter(**{f'{field}__in': values}).order_by(preserved)
 
 class ProductView(View):
+    @login_decorator
     def get(self, request):
-
-        user_id = 1
+        user         = request.user
         product_type = request.GET.get('type', '')
         keyword      = request.GET.get('keyword', '')
         page         = int(request.GET.get('page', 0))
@@ -31,7 +32,7 @@ class ProductView(View):
                 .values_list('product', flat=True)
                 .annotate(count=Count('product')).order_by('-count'))
 
-            filtered_products = filter_in_preserve(
+            filtered_products = filter_order(
                 Product.objects, 
                 'id', 
                 ordered_product_id).all()
@@ -73,9 +74,9 @@ class ProductView(View):
             'name'  : product.name,
             'price' : product.price,
             'stock' : product.stock > 0,
-            'like'  : product.user_set.filter(id=user_id).exists(),
+            'like'  : product.user_set.filter(id=user.id).exists(),
             'cart'  : product.orderlist_set.all().filter(
-                order__user__id=user_id,
+                order__user__id=user.id,
                 order__order_status__status='BASKET').exists(),
             'image' : product.imageurl_set.order_by('id')[0].url
                 } for product in filtered_products]
