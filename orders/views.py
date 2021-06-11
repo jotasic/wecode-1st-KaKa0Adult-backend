@@ -28,7 +28,10 @@ class BasketView(View):
                     'order_status':order_status,
                 } 
             )
- 
+
+            if OrderList.objects.filter(product=product, order=order).exists():
+                return JsonResponse({'message':'EXIST_ITEM'}, status=400)    
+
             OrderList.objects.create(product=product, order=order, count=product_count)
 
             return JsonResponse({'message':'SUCCESS'}, status=201)
@@ -37,13 +40,13 @@ class BasketView(View):
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
         
         except MultipleObjectsReturned:
-            return JsonResponse({'message':'MULTIPLE_OBJECT_RETURNED'}, status=500)
+            return JsonResponse({'message':'MULTIPLE_OBJECT_RETURNED'}, status=400)
         
         except ObjectDoesNotExist:
             return JsonResponse({'message':'DOES_NOT_EXIST'}, status=401)
 
         except JSONDecodeError:
-            return JsonResponse({'message':'DECODE_ERROR'}, status=40)
+            return JsonResponse({'message':'DECODE_ERROR'}, status=400)
 
     @login_decorator
     def delete(self, request, product_id):
