@@ -1,19 +1,11 @@
 import json, math
 
-from django.db.models.expressions import Case, When
-from django.db.models.query       import QuerySet
 from django.http.response         import JsonResponse
 from django.views                 import View
 from django.db.models             import Count
 
 from products.models              import Product
-from users.models                 import Like
 from users.utils                  import login_decorator
-
-def filter_order(queryset: QuerySet, field: str, values: list) -> QuerySet:
-    preserved = Case(*[When(**{field : val}, then=pos) 
-                    for pos, val in enumerate(values)])
-    return queryset.filter(**{f'{field}__in': values}).order_by(preserved)
 
 class ProductView(View):
     @login_decorator
@@ -28,14 +20,9 @@ class ProductView(View):
             filtered_products = Product.objects.order_by('-created_at')
 
         elif product_type == 'hot':
-            ordered_product_id = list(Like.objects
-                .values_list('product', flat=True)
-                .annotate(count=Count('product')).order_by('-count'))
-
-            filtered_products = filter_order(
-                Product.objects, 
-                'id', 
-                ordered_product_id).all()
+            filtered_products = Product.objects.annotate(
+                count=Count('like__product_id'
+                )).order_by('-count', '-id')
 
         elif product_type == 'category':
             filtered_products = Product.objects.filter(
