@@ -1,7 +1,7 @@
 from django.db import models
 
 class OrderStatus(models.Model):
-    BASKET  = 3
+    BASKET  = 1
     PAYMENT = 2
 
     status = models.CharField(max_length=45)
