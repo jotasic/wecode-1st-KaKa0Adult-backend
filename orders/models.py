@@ -9,7 +9,7 @@ class OrderStatus(models.Model):
 class Order(models.Model):
     user           = models.ForeignKey('users.User', on_delete=models.CASCADE)
     order_status   = models.ForeignKey(OrderStatus, on_delete=models.CASCADE)
-    recipient_info = models.OneToOneField('RecipientInfo', on_delete=models.CASCADE)
+    recipient_info = models.OneToOneField('RecipientInfo', on_delete=models.CASCADE, null=True)
     order_time     = models.DateTimeField(null=True)
     
     class Meta:
