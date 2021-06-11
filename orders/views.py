@@ -6,10 +6,11 @@ from django.http            import JsonResponse
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
 from .models         import Order, OrderStatus, OrderList
-from users.models    import User 
 from products.models import Product
+from users.utils     import login_decorator
 
 class BasketView(View):
+    @login_decorator
     def post(self, request, product_id):
         try:
             data = json.loads(request.body)
@@ -17,7 +18,7 @@ class BasketView(View):
             product_count = data['count']
 
             product      = Product.objects.get(id=product_id)
-            user         = User.objects.get(id=4)
+            user         = request.user
             order_status = OrderStatus.objects.get(status='BASKET')
             
             order, created = Order.objects.get_or_create(
@@ -27,10 +28,7 @@ class BasketView(View):
                     'order_status':order_status,
                 } 
             )
-            # 트렌잭션 처리 질문하기 
-            # if OrderList.objects.filter(product=product, order=order).exists():
-            #     return JsonResponse({'message':'PRODUCT_EXISTS'}, status=400)
-                
+ 
             OrderList.objects.create(product=product, order=order, count=product_count)
 
             return JsonResponse({'message':'SUCCESS'}, status=201)
@@ -46,11 +44,12 @@ class BasketView(View):
 
         except JSONDecodeError:
             return JsonResponse({'message':'DECODE_ERROR'}, status=40)
- 
+
+    @login_decorator
     def delete(self, request, product_id):
         try:
             product      = Product.objects.get(id=product_id)
-            user         = User.objects.get(id=4)
+            user         = request.user
             order_status = OrderStatus.objects.get(status='BASKET')
 
             order = Order.objects.get(user=user, order_status=order_status)
