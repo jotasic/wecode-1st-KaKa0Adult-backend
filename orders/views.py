@@ -58,3 +58,27 @@ class BasketView(View):
         order_item.delete()
 
         return JsonResponse({'message':'SUCCESS'}, status=204)
+
+    @login_decorator
+    def get(self, request):
+        order = Order.objects.get_or_create(
+            user         = request.user,
+            order_status = OrderStatus.BASKET
+        )
+
+        order_items = []
+
+        for order_item in order.order_item_set.all():
+            order_items.append({
+                'order_item_id': order_item.id,
+                'name'         : order_item.product.name,
+                'count'        : order_item.count,
+                'price'        : order_item.product.price,
+                'stock'        : order_item.product.stock,
+                'image_url'    : order_item.product.imageurl_set.first(),
+                'selected'     : order_item.selected
+            })
+        
+        return JsonResponse({'message':'SUCCESS', 'items_in_cart':order_items}, status=200)
+
+
