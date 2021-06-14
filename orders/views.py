@@ -48,7 +48,7 @@ class BasketView(View):
             order_item = OrderItem.objects.get(id=order_item)
 
             if order_item.order.user != request.user:
-                return JsonResponse({'message':'INVALID_ORDER_ITEMS'})
+                return JsonResponse({'message':'INVALID_ORDER_ITEMS'}, status=401)
 
             if order_item.order.order_status.id != OrderStatus.BASKET:
                 return JsonResponse({'message':'ORDER_DOSE_NOT_EXIST'}, status=400)
