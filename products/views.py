@@ -6,6 +6,7 @@ from django.db.models.aggregates import Count, Avg
 from django.shortcuts            import get_object_or_404
 
 from products.models             import Product
+from orders.models               import OrderStatus
 from users.utils                 import login_decorator
 
 class ProductDetailView(View):
@@ -15,7 +16,7 @@ class ProductDetailView(View):
             product = get_object_or_404(Product, id=product_id)
             user    = request.user
 
-            sart_point_info = product.review_set.aggregate(
+            sart_point = product.review_set.aggregate(
                     avg=Coalesce(Avg('star_point'), Value(0.0)),
                     count=Count('id'))
 
@@ -25,15 +26,15 @@ class ProductDetailView(View):
                 'price'          : product.price,
                 'content'        : product.content,
                 'stock'          : product.stock,
-                'starPoint'      : sart_point_info['avg'],
-                'starPointCount' : sart_point_info['count'],
+                'starPoint'      : sart_point['avg'],
+                'starPointCount' : sart_point['count'],
                 'imageUrls'      : list(
                     product.imageurl_set.values_list(
                     'url', flat=True).order_by('id')),
                 'like'           : product.user_set.filter(id=user.id).exists(),
-                'cart'           : product.orderlist_set.all().filter(
-                    order__user__id             = user.id,
-                    order__order_status__status = 'BASKET').exists(),
+                'cart'           : product.orderitem_set.filter(
+                    order__user                 = user,
+                    order__order_status__status = OrderStatus.BASKET).exists(),
             }
 
             return JsonResponse(result, status=200)
