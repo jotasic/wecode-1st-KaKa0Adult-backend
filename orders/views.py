@@ -55,12 +55,12 @@ class BasketView(View):
 
             order_item.delete()
 
-            return JsonResponse({'message':'SUCCESS'}, status=200)
+            return JsonResponse({'message':'SUCCESS'}, status=204)
 
         except MultipleObjectsReturned:
             return JsonResponse({'message':'MULTIPLE_OBJECT_RETURNED'}, status=400)
 
         except ObjectDoesNotExist:
-            return JsonResponse({'message':'DOES_NOT_EXIST'}, status=401)
+            return JsonResponse({'message':'DOES_NOT_EXIST'}, status=400)
 
         
