@@ -3,7 +3,7 @@ from json.decoder import JSONDecodeError
 
 from django.views           import View
 from django.http            import JsonResponse
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned
 
 from .models         import Order, OrderStatus, OrderItem
 from products.models import Product
