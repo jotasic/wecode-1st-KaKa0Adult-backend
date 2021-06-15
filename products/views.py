@@ -1,9 +1,8 @@
 import math
-from django.db.models.query_utils import Q
 
 from django.http.response         import Http404, JsonResponse
 from django.views                 import View
-from django.db.models             import Count, Avg
+from django.db.models             import Count, Avg, Q
 from django.shortcuts             import get_object_or_404
 
 from products.models              import Product
@@ -45,33 +44,32 @@ class ProductDetailView(View):
 class ProductView(View):
     @login_decorator
     def get(self, request):
-        order_columns = {
-            'createdAt' : 'created_at',
-            'like'      : 'count',
-            'price'     : 'price',
-        }
-
-        order_sort = {
-            'desc' : '-',
-            'asc'  : ''
+        order_conditions = {
+            'new'       : '-created_at',
+            'popular'   : '-count',
+            'unpopular' : 'count',
+            'old'       : 'created_at',
+            'highPrice' : '-price',
+            'lowPrice'  : 'price',
+            'bestSell'  : '-sell',
+            'worstSell' : 'sell'
         }
 
         user      = request.user
         character = request.GET.get('character')
         search    = request.GET.get('search')
         category  = request.GET.get('category')
-        order     = request.GET.get('order')
+        order     = request.GET.get('order', '')
         page      = int(request.GET.get('page', 0))
         page_size = int(request.GET.get('pageSize', 0))
         q         = Q()
-        result    = {}
 
         conditions = {
             'category'  : Q(category__name__icontains=category),
             'character' : Q(character__name__icontains=character),
             'search'    : Q(name__icontains=search)
         }
-
+        
         if category:
             q &= conditions['category']
 
@@ -81,13 +79,9 @@ class ProductView(View):
         if search:
             q &= conditions['search']
 
-        if order:
-            order = order.split(',')
-            order = order_sort[order[1]]+order_columns[order[0]]
-
         filtered_products = Product.objects.filter(
             q).annotate(count=Count("like__product_id")).order_by(
-                order)
+                order_conditions.get(order, 'id'))
         
         total_count = filtered_products.count()
 
