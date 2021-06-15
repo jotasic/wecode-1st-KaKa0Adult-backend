@@ -66,9 +66,9 @@ class BasketView(View):
 
             order_item_id = data['order_item_id']
             count         = data['count']
-           
-            if count < 0 or type(count) != int:
-                return JsonResponse({'message':'INVALID_COUNT_TYPE'})
+    
+            if type(count) != int or count < 0:
+                return JsonResponse({'message':'INVALID_COUNT_TYPE'}, status=400)
             
             if not OrderItem.objects.filter(order__user=request.user, id=order_item_id):
                 return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
