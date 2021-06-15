@@ -62,8 +62,8 @@ class ProductView(View):
             'stock' : product.stock,
             'like'  : product.user_set.filter(id=user.id).exists(),
             'cart'  : product.orderitem_set.filter(
-                order__user=user,
-                order__order_status__status=OrderStatus.BASKET).exists(),
+                order__user            = user,
+                order__order_status_id = OrderStatus.BASKET).exists(),
             'image' : product.imageurl_set.order_by('id')[0].url
                 } for product in filtered_products]
                 
