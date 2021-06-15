@@ -33,7 +33,7 @@ class ProductDetailView(View):
                     'url', flat=True).order_by('id')),
                 'like'           : product.user_set.filter(id=user.id).exists(),
                 'cart'           : product.orderitem_set.filter(
-                    order__user                 = user,
+                    order__user            = user,
                     order__order_status_id = OrderStatus.BASKET).exists(),
             }
 
