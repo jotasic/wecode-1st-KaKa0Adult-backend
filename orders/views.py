@@ -15,7 +15,7 @@ class BasketView(View):
         try:
             data = json.loads(request.body)
 
-            product       = data['id']            
+            product       = data['product_id']            
             product_count = data['count']
 
             if not Product.objects.filter(id=product).exists():
