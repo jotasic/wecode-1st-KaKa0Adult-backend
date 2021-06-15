@@ -67,7 +67,7 @@ class BasketView(View):
                 'count'        : order_item.count,
                 'price'        : order_item.product.price,
                 'stock'        : order_item.product.stock,
-                'image_url'    : order_item.product.imageurl_set.order_by('id')[0],
+                'image_url'    : order_item.product.imageurl_set.order_by('id')[0].url,
                 'selected'     : order_item.selected
             }for order_item in OrderItem.objects.filter(
                 order__user=request.user, 
