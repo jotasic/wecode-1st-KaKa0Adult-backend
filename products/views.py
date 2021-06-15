@@ -34,7 +34,7 @@ class ProductDetailView(View):
                 'like'           : product.user_set.filter(id=user.id).exists(),
                 'cart'           : product.orderitem_set.filter(
                     order__user                 = user,
-                    order__order_status__status = OrderStatus.BASKET).exists(),
+                    order__order_status_id = OrderStatus.BASKET).exists(),
             }
 
             return JsonResponse(result, status=200)
