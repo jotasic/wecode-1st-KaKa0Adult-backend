@@ -1,4 +1,5 @@
 import json, re, bcrypt, jwt
+from users.utils      import login_decorator
 
 from django.views     import View
 from django.http      import JsonResponse
@@ -68,3 +69,10 @@ class LoginView(View):
 
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
+
+class DeleteAccount(View):
+    @login_decorator
+    def delete(self, request):
+        request.user.delete()
+
+        return JsonResponse({'message':'DELETE_SUCCESS'}, status=204)
