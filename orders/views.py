@@ -15,7 +15,7 @@ class BasketView(View):
         try:
             data = json.loads(request.body)
 
-            product       = data['id']            
+            product       = data['product_id']            
             product_count = data['count']
 
             if not Product.objects.filter(id=product).exists():
@@ -44,7 +44,7 @@ class BasketView(View):
 
     @login_decorator
     def delete(self, request, order_item):
-        if not OrderItem.objects.filter(id=order_item).exists:
+        if not OrderItem.objects.filter(id=order_item).exists():
             return JsonResponse({'message':'INVALID_ORDER_ITEMS'}, status=400)
             
         order_item = OrderItem.objects.get(id=order_item)
@@ -70,7 +70,7 @@ class BasketView(View):
             if type(count) != int or count < 0:
                 return JsonResponse({'message':'INVALID_COUNT_TYPE'}, status=400)
             
-            if not OrderItem.objects.filter(order__user=request.user, id=order_item_id):
+            if not OrderItem.objects.filter(order__user=request.user, id=order_item_id).exists():
                 return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
 
             OrderItem.objects.filter(id=order_item_id).update(count=count)
