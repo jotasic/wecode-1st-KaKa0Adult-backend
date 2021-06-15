@@ -66,7 +66,7 @@ class BasketView(View):
 
             order_item_id = data['order_item_id']
             count         = data['count']
-            print(type(count))
+           
             if count < 0 or type(count) != int:
                 return JsonResponse({'message':'INVALID_COUNT_TYPE'})
             
