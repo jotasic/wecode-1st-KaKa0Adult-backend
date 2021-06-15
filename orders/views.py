@@ -23,7 +23,7 @@ class BasketView(View):
             
             order, created = Order.objects.get_or_create(
                 user         = request.user,
-                order_status = OrderStatus.BASKET
+                order_status_id = OrderStatus.BASKET
             )
 
             if OrderItem.objects.filter(product_id=product, order=order).exists():
@@ -61,24 +61,21 @@ class BasketView(View):
 
     @login_decorator
     def get(self, request):
-        order = Order.objects.get_or_create(
-            user         = request.user,
-            order_status = OrderStatus.BASKET
+        order, created = Order.objects.get_or_create(
+            user            = request.user,
+            order_status_id = OrderStatus.BASKET
         )
 
-        order_items = []
-
-        for order_item in order.order_item_set.all():
-            order_items.append({
+        order_items = [{
                 'order_item_id': order_item.id,
                 'name'         : order_item.product.name,
                 'count'        : order_item.count,
                 'price'        : order_item.product.price,
                 'stock'        : order_item.product.stock,
-                'image_url'    : order_item.product.imageurl_set.first(),
+                'image_url'    : order_item.product.imageurl_set.order_by('id')[0],
                 'selected'     : order_item.selected
-            })
-        
+            }for order_item in order.orderitem_set.all()]
+
         return JsonResponse({'message':'SUCCESS', 'items_in_cart':order_items}, status=200)
 
 
