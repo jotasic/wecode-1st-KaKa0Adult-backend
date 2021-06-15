@@ -58,3 +58,22 @@ class BasketView(View):
         order_item.delete()
 
         return JsonResponse({'message':'SUCCESS'}, status=204)
+
+    @login_decorator
+    def patch(self, request):
+        try:
+            data = json.loads(request.body)
+
+            order_item_id = data['order_item_id']
+            count         = data['count']
+
+            if count < 0 and type(count) != int:
+                return JsonResponse({'message':'INVALID_COUNT_TYPE'})
+            
+            if not OrderItem.objects.filter(order__user=request.user, id=order_item_id):
+                return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
+
+            OrderItem.objects.filter(id=order_item_id).update(count=count)
+
+        except KeyError:
+            return JsonResponse({'message':'KEY_ERROR'}, status=400)
