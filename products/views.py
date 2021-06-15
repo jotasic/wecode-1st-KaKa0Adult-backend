@@ -1,8 +1,6 @@
 from django.http.response        import Http404, JsonResponse
 from django.views                import View
-from django.db.models            import Value
-from django.db.models.functions  import Coalesce
-from django.db.models.aggregates import Count, Avg
+from django.db.models            import Count, Avg
 from django.shortcuts            import get_object_or_404
 
 from products.models             import Product
@@ -17,8 +15,7 @@ class ProductDetailView(View):
             user    = request.user
 
             sart_point = product.review_set.aggregate(
-                    avg=Coalesce(Avg('star_point'), Value(0.0)),
-                    count=Count('id'))
+                    avg=Avg('star_point'), count=Count('id'))
 
             result  = {
                 'id'             : product.id,
@@ -26,7 +23,7 @@ class ProductDetailView(View):
                 'price'          : product.price,
                 'content'        : product.content,
                 'stock'          : product.stock,
-                'starPoint'      : sart_point['avg'],
+                'starPoint'      : sart_point['avg'] if sart_point['avg'] else 0.0,
                 'starPointCount' : sart_point['count'],
                 'imageUrls'      : list(
                     product.imageurl_set.values_list(
