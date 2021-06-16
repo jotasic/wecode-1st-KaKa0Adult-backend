@@ -19,9 +19,10 @@ class Order(models.Model):
         db_table = 'orders'
 
 class OrderItem(models.Model):
-    order   = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey('products.Product', on_delete=models.CASCADE)
-    count   = models.IntegerField()
+    order    = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product  = models.ForeignKey('products.Product', on_delete=models.CASCADE)
+    count    = models.IntegerField()
+    selected = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'order_items'
