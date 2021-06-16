@@ -80,33 +80,39 @@ class BasketView(View):
     
 class OrderView(View):
     @login_decorator
-    @transaction.atomic
     def post(self, request):
         try:
             data            = json.loads(request.body)
             recipient_info  = data['recipient_info']
             order_item_list = data['order_item_list']
             
-            if not OrderItem.objects.filter(
-                id__in=order_item_list, 
-                order__user=request.user, 
-                order__order_status=OrderStatus.BASKET).count() != len(order_item_list):
+            with transaction.atomic():
+                if not OrderItem.objects.filter(
+                    id__in=order_item_list, 
+                    order__user=request.user, 
+                    order__order_status=OrderStatus.BASKET).count() != len(order_item_list):
 
-                return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
-            
-            order = Order.objects.create(
-                user            = request.user,
-                order_item      = datetime.datetime.now(),
-                order_status_id = OrderStatus.PAYMENT)
+                    return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
+                
+                order = Order.objects.create(
+                    user            = request.user,
+                    order_time      = datetime.datetime.now(),
+                    order_status_id = OrderStatus.PAYMENT)
 
-            OrderItem.objects.filter(id__in=order_item_list).update(order=order)
-            
-            RecipientInfo.objects.create(
-                address      = recipient_info['address'],
-                name         = recipient_info['name'],
-                phone_number = recipient_info['phone_number'],
-                request      = recipient_info['request']
-            )
+                OrderItem.objects.filter(id__in=order_item_list).update(order=order)
+                request = recipient_info.get('request')
+
+                if request == None:
+                    request = ""
+
+                RecipientInfo.objects.create(
+                    address      = recipient_info['address'],
+                    name         = recipient_info['name'],
+                    phone_number = recipient_info['phone_number'],
+                    request      = request
+                )
+
+            return JsonResponse({'message':'SUCCESS'}, status=200)
         
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
