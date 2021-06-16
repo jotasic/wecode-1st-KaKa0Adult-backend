@@ -79,7 +79,6 @@ class BasketView(View):
     def patch(self, request):
         try:
             data = json.loads(request.body)
-
             order_item_id = data['order_item_id']
             count         = data['count']
     
