@@ -15,7 +15,7 @@ class BasketView(View):
         try:
             data = json.loads(request.body)
 
-            product       = data['id']            
+            product       = data['product_id']            
             product_count = data['count']
 
             if not Product.objects.filter(id=product).exists():
@@ -23,7 +23,7 @@ class BasketView(View):
             
             order, created = Order.objects.get_or_create(
                 user         = request.user,
-                order_status = OrderStatus.BASKET
+                order_status_id = OrderStatus.BASKET
             )
 
             if OrderItem.objects.filter(product_id=product, order=order).exists():
@@ -44,7 +44,7 @@ class BasketView(View):
 
     @login_decorator
     def delete(self, request, order_item):
-        if not OrderItem.objects.filter(id=order_item).exists:
+        if not OrderItem.objects.filter(id=order_item).exists():
             return JsonResponse({'message':'INVALID_ORDER_ITEMS'}, status=400)
             
         order_item = OrderItem.objects.get(id=order_item)
@@ -58,3 +58,20 @@ class BasketView(View):
         order_item.delete()
 
         return JsonResponse({'message':'SUCCESS'}, status=204)
+
+    @login_decorator
+    def get(self, request):
+        order_items = [{
+                'order_item_id': order_item.id,
+                'name'         : order_item.product.name,
+                'count'        : order_item.count,
+                'price'        : order_item.product.price,
+                'stock'        : order_item.product.stock,
+                'image_url'    : order_item.product.imageurl_set.order_by('id')[0].url,
+                'selected'     : order_item.selected
+            }for order_item in OrderItem.objects.filter(
+                order__user=request.user, 
+                order__order_status_id=OrderStatus.BASKET
+            )]
+
+        return JsonResponse({'message':'SUCCESS', 'items_in_cart':order_items}, status=200)
