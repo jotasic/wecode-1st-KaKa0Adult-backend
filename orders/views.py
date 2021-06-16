@@ -87,7 +87,7 @@ class OrderView(View):
             order_item_list = data['order_item_list']
             
             with transaction.atomic():
-                if not OrderItem.objects.filter(
+                if OrderItem.objects.filter(
                     id__in=order_item_list, 
                     order__user=request.user, 
                     order__order_status=OrderStatus.BASKET).count() != len(order_item_list):
@@ -112,7 +112,7 @@ class OrderView(View):
                     request      = request
                 )
 
-            return JsonResponse({'message':'SUCCESS'}, status=200)
+            return JsonResponse({'message':'SUCCESS'}, status=201)
         
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
