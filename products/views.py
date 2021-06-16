@@ -51,8 +51,8 @@ class ProductView(View):
             'old'       : 'created_at',
             'highPrice' : '-price',
             'lowPrice'  : 'price',
-            'bestSell'  : '-sell',
-            'worstSell' : 'sell'
+            'bestSell'  : '-sell_count',
+            'worstSell' : 'sell_count'
         }
 
         user      = request.user
@@ -63,21 +63,15 @@ class ProductView(View):
         page      = int(request.GET.get('page', 0))
         page_size = int(request.GET.get('pageSize', 0))
         q         = Q()
-
-        conditions = {
-            'category'  : Q(category__name__icontains=category),
-            'character' : Q(character__name__icontains=character),
-            'search'    : Q(name__icontains=search)
-        }
         
         if category:
-            q &= conditions['category']
+            q &= Q(category__name__icontains=category)
 
         if character:
-            q &= conditions['character']
+            q &= Q(character__name__icontains=character)
 
         if search:
-            q &= conditions['search']
+            q &= Q(name__icontains=search)
 
         filtered_products = Product.objects.filter(
             q).annotate(count=Count("like__product_id")).order_by(
@@ -108,5 +102,5 @@ class ProductView(View):
                 'image' : product.imageurl_set.order_by('id')[0].url
                 } for product in filtered_products]
         }
-                
+
         return JsonResponse(result, status=200)
