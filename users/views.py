@@ -92,9 +92,6 @@ class LikeView(View):
         
     @login_decorator
     def delete(self, request, product_id):
-        user = request.user
-        
-        if Like.objects.filter(user_id = user.id, product_id = product_id).exists():
-            Like.objects.filter(user_id = user.id, product_id = product_id).delete()
+        Like.objects.filter(user_id = request.user.id, product_id = product_id).delete()
         
         return JsonResponse({'message':'DELETE_SUCCESS'}, status=204)
