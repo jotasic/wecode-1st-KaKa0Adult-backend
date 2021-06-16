@@ -33,8 +33,9 @@ class ProductDetailView(View):
                     'cart'           : product.orderitem_set.filter(
                         order__user            = user,
                         order__order_status_id = OrderStatus.BASKET).exists(),
-            }]}
-            
+                }]
+            }
+
             return JsonResponse(result, status=200)
 
         except Http404:
