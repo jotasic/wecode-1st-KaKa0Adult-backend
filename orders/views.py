@@ -1,5 +1,6 @@
 import json
-from json.decoder import JSONDecodeError
+from distutils.util import strtobool
+from json.decoder   import JSONDecodeError
 
 from django.views           import View
 from django.http            import JsonResponse
@@ -59,6 +60,7 @@ class BasketView(View):
 
         return JsonResponse({'message':'SUCCESS'}, status=204)
 
+    @login_decorator
     def get(self, request):
         order_items = [{
                 'order_item_id': order_item.id,
@@ -83,7 +85,7 @@ class BasketView(View):
             count         = data.get('count')
             select        = data.get('select')
     
-            if type(count) != int or count < 0:
+            if (type(count) != int or count < 0) and count != None:
                 return JsonResponse({'message':'INVALID_COUNT_TYPE'}, status=400)
             
             if not OrderItem.objects.filter(order__user=request.user, id=order_item_id).exists():
@@ -95,7 +97,7 @@ class BasketView(View):
                 order_item.update(count=count)
 
             if select != None:
-                order_item.update(select=select)
+                order_item.update(selected=strtobool(select))
 
             return JsonResponse({'message':'SUCCESS'}, status=200)
             
