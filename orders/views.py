@@ -1,11 +1,13 @@
 import json
+import datetime
 from json.decoder import JSONDecodeError
 
 from django.views           import View
 from django.http            import JsonResponse
 from django.core.exceptions import MultipleObjectsReturned
+from django.db              import transaction
 
-from .models         import Order, OrderStatus, OrderItem
+from .models         import Order, OrderStatus, OrderItem, RecipientInfo
 from products.models import Product
 from users.utils     import login_decorator
 
@@ -74,4 +76,37 @@ class BasketView(View):
                 order__order_status_id=OrderStatus.BASKET
             )]
 
-        return JsonResponse({'message':'SUCCESS', 'items_in_cart':order_items}, status=200)
+        return JsonResponse({'message':'SUCCESS', 'items_in_cart':order_items}, status=200)\
+    
+class OrderView(View):
+    @login_decorator
+    @transaction.atomic
+    def post(self, request):
+        try:
+            data            = json.loads(request.body)
+            recipient_info  = data['recipient_info']
+            order_item_list = data['order_item_list']
+            
+            if not OrderItem.objects.filter(
+                id__in=order_item_list, 
+                order__user=request.user, 
+                order__order_status=OrderStatus.BASKET).count() != len(order_item_list):
+
+                return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
+            
+            order = Order.objects.create(
+                user            = request.user,
+                order_item      = datetime.datetime.now(),
+                order_status_id = OrderStatus.PAYMENT)
+
+            OrderItem.objects.filter(id__in=order_item_list).update(order=order)
+            
+            RecipientInfo.objects.create(
+                address      = recipient_info['address'],
+                name         = recipient_info['name'],
+                phone_number = recipient_info['phone_number'],
+                request      = recipient_info['request']
+            )
+        
+        except KeyError:
+            return JsonResponse({'message':'KEY_ERROR'}, status=400)
