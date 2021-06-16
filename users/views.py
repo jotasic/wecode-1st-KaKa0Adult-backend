@@ -4,7 +4,9 @@ from django.views     import View
 from django.http      import JsonResponse
 from django.db.models import Q
 
-from .models             import User
+from products.models     import Product
+from .models             import User, Like
+from users.utils         import login_decorator
 from kaka0Adult.settings import SECRET_KEY, ALGORITHM
 
 class SignupView(View):
@@ -68,3 +70,28 @@ class LoginView(View):
 
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
+    
+class LikeView(View):
+    @login_decorator
+    def post(self, request):
+        try:
+            data       = json.loads(request.body)
+            product_id = data['product_id']
+            user       = request.user
+        
+            if not Product.objects.filter(id = product_id ).exists():
+                return JsonResponse({'message':'INVALID_PRODUCT'}, status=401)
+ 
+            if not Like.objects.filter(user_id = user.id, product_id = product_id).exists():
+                Like.objects.create(user_id = user.id, product_id = product_id)
+            
+            return JsonResponse({'message':'ADDITION_SUCCESS'}, status=201)
+
+        except KeyError:
+            return JsonResponse({'message':'KEY_ERROR'}, status=400)
+        
+    @login_decorator
+    def delete(self, request, product_id):
+        Like.objects.filter(user_id = request.user.id, product_id = product_id).delete()
+        
+        return JsonResponse({'message':'DELETE_SUCCESS'}, status=204)
