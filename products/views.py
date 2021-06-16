@@ -41,7 +41,7 @@ class ProductDetailView(View):
         except Http404:
             return JsonResponse({'message':'PRODUCT_NOT_FOUND'}, status=404)
 
-class ProductView(View):
+class ProductListView(View):
     @login_decorator
     def get(self, request):
         order_conditions = {
