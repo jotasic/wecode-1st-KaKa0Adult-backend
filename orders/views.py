@@ -78,17 +78,24 @@ class BasketView(View):
     @login_decorator
     def patch(self, request):
         try:
-            data = json.loads(request.body)
+            data          = json.loads(request.body)
             order_item_id = data['order_item_id']
-            count         = data['count']
+            count         = data.get('count')
+            select        = data.get('select')
     
             if type(count) != int or count < 0:
                 return JsonResponse({'message':'INVALID_COUNT_TYPE'}, status=400)
             
             if not OrderItem.objects.filter(order__user=request.user, id=order_item_id).exists():
                 return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
+            
+            order_item = OrderItem.objects.filter(id=order_item_id)
+            
+            if count != None:
+                order_item.update(count=count)
 
-            OrderItem.objects.filter(id=order_item_id).update(count=count)
+            if select != None:
+                order_item.update(select=select)
 
             return JsonResponse({'message':'SUCCESS'}, status=200)
             
