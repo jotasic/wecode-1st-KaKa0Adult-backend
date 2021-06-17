@@ -83,8 +83,8 @@ class BasketView(View):
         try:
             data          = json.loads(request.body)
             order_item_id = data['order_item_id']
-            count         = data['count']
-            select        = data['select']
+            count         = data.get('count')
+            select        = data.get('select')
     
             if (type(count) != int or count < 0) and count != None:
                 return JsonResponse({'message':'INVALID_COUNT_TYPE'}, status=400)
