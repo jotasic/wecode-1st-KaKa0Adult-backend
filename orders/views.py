@@ -1,12 +1,13 @@
 import json
-from distutils.util import strtobool
-from json.decoder   import JSONDecodeError
+import datetime
+from json.decoder import JSONDecodeError
 
 from django.views           import View
 from django.http            import JsonResponse
 from django.core.exceptions import MultipleObjectsReturned
+from django.db              import transaction
 
-from .models         import Order, OrderStatus, OrderItem
+from .models         import Order, OrderStatus, OrderItem, RecipientInfo
 from products.models import Product
 from users.utils     import login_decorator
 
@@ -14,9 +15,8 @@ class BasketView(View):
     @login_decorator
     def post(self, request):
         try:
-            data = json.loads(request.body)
-
-            product       = data['product_id']            
+            data          = json.loads(request.body)
+            product       = data['product_id']
             product_count = data['count']
 
             if not Product.objects.filter(id=product).exists():
@@ -63,6 +63,7 @@ class BasketView(View):
     @login_decorator
     def get(self, request):
         order_items = [{
+                'id'           : index,
                 'order_item_id': order_item.id,
                 'name'         : order_item.product.name,
                 'count'        : order_item.count,
@@ -70,10 +71,10 @@ class BasketView(View):
                 'stock'        : order_item.product.stock,
                 'image_url'    : order_item.product.imageurl_set.order_by('id')[0].url,
                 'selected'     : order_item.selected
-            }for order_item in OrderItem.objects.filter(
+            }for index, order_item in enumerate(OrderItem.objects.filter(
                 order__user=request.user, 
                 order__order_status_id=OrderStatus.BASKET
-            )]
+            ))]
 
         return JsonResponse({'message':'SUCCESS', 'items_in_cart':order_items}, status=200)
 
@@ -103,5 +104,42 @@ class BasketView(View):
 
             return JsonResponse({'message':'SUCCESS'}, status=200)
             
+        except KeyError:
+            return JsonResponse({'message':'KEY_ERROR'}, status=400)
+
+class OrderView(View):
+    @login_decorator
+    def post(self, request):
+        try:
+            data            = json.loads(request.body)
+            recipient_info  = data['recipient_info']
+            order_item_list = data['order_item_list']
+            
+            with transaction.atomic():
+                order_item_count = OrderItem.objects.filter(
+                    id__in              = order_item_list,
+                    order__user         = request.user,
+                    order__order_status = OrderStatus.BASKET).count()
+
+                if order_item_count != len(order_item_list):
+                    return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
+                
+                recipient_info = RecipientInfo.objects.create(
+                    address      = recipient_info['address'],
+                    name         = recipient_info['name'],
+                    phone_number = recipient_info['phone_number'],
+                    comment      = recipient_info.get('request', '')
+                )
+
+                order = Order.objects.create(
+                    user            = request.user,
+                    order_time      = datetime.datetime.now(),
+                    order_status_id = OrderStatus.PAYMENT,
+                    recipient_info  = recipient_info)
+
+                OrderItem.objects.filter(id__in=order_item_list).update(order=order)            
+
+            return JsonResponse({'message':'SUCCESS'}, status=201)
+        
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)

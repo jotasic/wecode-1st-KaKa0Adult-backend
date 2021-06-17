@@ -31,7 +31,7 @@ class RecipientInfo(models.Model):
     address      = models.CharField(max_length=100)
     name         = models.CharField(max_length=45)
     phone_number = models.CharField(max_length=15)
-    request      = models.CharField(max_length=100)
+    comment      = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'recipient_infoes'
