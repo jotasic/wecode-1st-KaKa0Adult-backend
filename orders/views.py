@@ -1,5 +1,6 @@
 import json
-from json.decoder import JSONDecodeError
+from distutils.util import strtobool
+from json.decoder   import JSONDecodeError
 
 from django.views           import View
 from django.http            import JsonResponse
@@ -75,3 +76,32 @@ class BasketView(View):
             )]
 
         return JsonResponse({'message':'SUCCESS', 'items_in_cart':order_items}, status=200)
+
+    @login_decorator
+    def patch(self, request):
+        try:
+            data          = json.loads(request.body)
+            order_item_id = data['order_item_id']
+            count         = data['count']
+            select        = data['select']
+    
+            if (type(count) != int or count < 0) and count != None:
+                return JsonResponse({'message':'INVALID_COUNT_TYPE'}, status=400)
+            
+            if not OrderItem.objects.filter(order__user=request.user, id=order_item_id).exists():
+                return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
+            
+            order_item = OrderItem.objects.get(id=order_item_id)
+            
+            if count is not None:
+                order_item.count = count
+
+            if select is not None:
+                order_item.selected = select
+
+            order_item.save()
+
+            return JsonResponse({'message':'SUCCESS'}, status=200)
+            
+        except KeyError:
+            return JsonResponse({'message':'KEY_ERROR'}, status=400)

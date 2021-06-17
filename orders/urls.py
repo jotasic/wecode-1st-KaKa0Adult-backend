@@ -4,5 +4,5 @@ from .views import BasketView
 
 urlpatterns = [
     path('/order-items/<int:order_item>', BasketView.as_view()),
-    path('/order-items', BasketView.as_view()),
+    path('/order-items', BasketView.as_view())
 ]
