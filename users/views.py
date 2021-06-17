@@ -95,3 +95,14 @@ class LikeView(View):
         Like.objects.filter(user_id = request.user.id, product_id = product_id).delete()
         
         return JsonResponse({'message':'DELETE_SUCCESS'}, status=204)
+    
+    @login_decorator
+    def get(self, request):
+        result = {
+            'product_list'  :[{
+                'id'        : product.id,
+                'name'      : product.name,
+                'image_url' : product.imageurl_set.order_by('id')[0].url
+            } for product in request.user.like.all()]
+        }
+        return JsonResponse(result, status=200)

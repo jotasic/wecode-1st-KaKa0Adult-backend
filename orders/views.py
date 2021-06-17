@@ -1,4 +1,5 @@
 import json
+
 import datetime
 from json.decoder import JSONDecodeError
 
@@ -77,8 +78,37 @@ class BasketView(View):
                 order__order_status_id=OrderStatus.BASKET
             ))]
 
-        return JsonResponse({'message':'SUCCESS', 'items_in_cart':order_items}, status=200)\
+        return JsonResponse({'message':'SUCCESS', 'items_in_cart':order_items}, status=200)
+
+    @login_decorator
+    def patch(self, request):
+        try:
+            data          = json.loads(request.body)
+            order_item_id = data['order_item_id']
+            count         = data['count']
+            select        = data['select']
     
+            if (type(count) != int or count < 0) and count != None:
+                return JsonResponse({'message':'INVALID_COUNT_TYPE'}, status=400)
+            
+            if not OrderItem.objects.filter(order__user=request.user, id=order_item_id).exists():
+                return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
+            
+            order_item = OrderItem.objects.get(id=order_item_id)
+            
+            if count is not None:
+                order_item.count = count
+
+            if select is not None:
+                order_item.selected = select
+
+            order_item.save()
+
+            return JsonResponse({'message':'SUCCESS'}, status=200)
+            
+        except KeyError:
+            return JsonResponse({'message':'KEY_ERROR'}, status=400)
+
 class OrderView(View):
     @login_decorator
     def post(self, request):
@@ -88,30 +118,28 @@ class OrderView(View):
             order_item_list = data['order_item_list']
             
             with transaction.atomic():
-                if OrderItem.objects.filter(
-                    id__in=order_item_list, 
-                    order__user=request.user, 
-                    order__order_status=OrderStatus.BASKET).count() != len(order_item_list):
+                order_item_count = OrderItem.objects.filter(
+                    id__in              = order_item_list,
+                    order__user         = request.user,
+                    order__order_status = OrderStatus.BASKET).count()
 
+                if order_item_count != len(order_item_list):
                     return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
                 
-                order = Order.objects.create(
-                    user            = request.user,
-                    order_time      = datetime.datetime.now(),
-                    order_status_id = OrderStatus.PAYMENT)
-
-                OrderItem.objects.filter(id__in=order_item_list).update(order=order)
-                request = recipient_info.get('request')
-
-                if request == None:
-                    request = ""
-
-                RecipientInfo.objects.create(
+                recipient_info = RecipientInfo.objects.create(
                     address      = recipient_info['address'],
                     name         = recipient_info['name'],
                     phone_number = recipient_info['phone_number'],
-                    request      = request
+                    comment      = recipient_info.get('request', "")
                 )
+
+                order = Order.objects.create(
+                    user            = request.user,
+                    order_time      = datetime.datetime.now(),
+                    order_status_id = OrderStatus.PAYMENT,
+                    recipient_info  = recipient_info)
+
+                OrderItem.objects.filter(id__in=order_item_list).update(order=order)            
 
             return JsonResponse({'message':'SUCCESS'}, status=201)
         
