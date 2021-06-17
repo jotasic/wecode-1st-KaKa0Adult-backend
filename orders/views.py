@@ -64,6 +64,7 @@ class BasketView(View):
     @login_decorator
     def get(self, request):
         order_items = [{
+                'id'           : index,
                 'order_item_id': order_item.id,
                 'name'         : order_item.product.name,
                 'count'        : order_item.count,
@@ -71,10 +72,10 @@ class BasketView(View):
                 'stock'        : order_item.product.stock,
                 'image_url'    : order_item.product.imageurl_set.order_by('id')[0].url,
                 'selected'     : order_item.selected
-            }for order_item in OrderItem.objects.filter(
+            }for index, order_item in enumerate(OrderItem.objects.filter(
                 order__user=request.user, 
                 order__order_status_id=OrderStatus.BASKET
-            )]
+            ))]
 
         return JsonResponse({'message':'SUCCESS', 'items_in_cart':order_items}, status=200)\
     
