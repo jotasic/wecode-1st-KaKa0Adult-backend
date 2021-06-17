@@ -97,7 +97,7 @@ class BasketView(View):
                 order_item.update(count=count)
 
             if select != None:
-                order_item.update(selected=strtobool(select))
+                order_item.update(selected=select)
 
             return JsonResponse({'message':'SUCCESS'}, status=200)
             
