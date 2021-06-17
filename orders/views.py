@@ -1,5 +1,4 @@
 import json
-
 import datetime
 from json.decoder import JSONDecodeError
 
@@ -16,9 +15,8 @@ class BasketView(View):
     @login_decorator
     def post(self, request):
         try:
-            data = json.loads(request.body)
-
-            product       = data['product_id']            
+            data          = json.loads(request.body)
+            product       = data['product_id']
             product_count = data['count']
 
             if not Product.objects.filter(id=product).exists():
@@ -130,7 +128,7 @@ class OrderView(View):
                     address      = recipient_info['address'],
                     name         = recipient_info['name'],
                     phone_number = recipient_info['phone_number'],
-                    comment      = recipient_info.get('request', "")
+                    comment      = recipient_info.get('request', '')
                 )
 
                 order = Order.objects.create(
