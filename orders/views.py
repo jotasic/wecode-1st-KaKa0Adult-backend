@@ -91,13 +91,15 @@ class BasketView(View):
             if not OrderItem.objects.filter(order__user=request.user, id=order_item_id).exists():
                 return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
             
-            order_item = OrderItem.objects.filter(id=order_item_id)
+            order_item = OrderItem.objects.get(id=order_item_id)
             
-            if count != None:
-                order_item.update(count=count)
+            if count is not None:
+                order_item.count = count
 
-            if select != None:
-                order_item.update(selected=select)
+            if select is not None:
+                order_item.selected = select
+
+            order_item.save()
 
             return JsonResponse({'message':'SUCCESS'}, status=200)
             
