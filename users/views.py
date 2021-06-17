@@ -96,7 +96,6 @@ class LikeView(View):
         
         return JsonResponse({'message':'DELETE_SUCCESS'}, status=204)
     
-class UserLikeView(View):
     @login_decorator
     def get(self, request):
         result = {
