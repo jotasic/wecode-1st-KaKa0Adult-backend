@@ -7,5 +7,4 @@ urlpatterns = [
     path('/login', LoginView.as_view()),
     path('/like/product/<int:product_id>', LikeView.as_view()),
     path('/like/product', LikeView.as_view()),
-    path('/like/list', LikeView.as_view()),
 ]
