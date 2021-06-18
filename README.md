@@ -19,14 +19,13 @@
 <br>
 
 ## 적용 기술 및 구현 기능
-<img src="https://img.shields.io/badge/Python-3.8-3766AB?style=flat&logo=Python&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Django-3.2-3766AB?style=flat&logo=Django&logoColor=white"/>
 
 
 ### 적용 기술
-> - Front-End : React.js, React-router, sass, ES6+
-> - Back-End : Python, Django, Bcrypt, JWT, MySQL
-> - Common : AWS(EC2,RDS)
-> - ETC : git, github, postman, trello 
+> - Front-End : <img src="https://img.shields.io/badge/React.js-3766AB?style=flat&logo=React&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/React%20Router-3766AB?style=flat&logo=React-router&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/sass-3766AB?style=flat&logo=sass&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/ES6+-3766AB?style=flat&logo=ES6+&logoColor=white"/>&nbsp;
+> - Back-End : <img src="https://img.shields.io/badge/Python-3.8-3766AB?style=flat&logo=Python&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Django-3.2.4-3766AB?style=flat&logo=Django&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Mysql-8.0-3766AB?style=flat&logo=Mysql&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Bcrypt-3.2-3766AB?style=flat&logo=PyJWT&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/PyJWT-2.1-3766AB?style=flat&logo=PyJWT&logoColor=white"/>
+> - Common : <img src="https://img.shields.io/badge/AWS-EC2-3766AB?style=flat&logo=Aws&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/AWS-RDS-3766AB?style=flat&logo=Aws&logoColor=white"/>&nbsp;
+> - ETC : <img src="https://img.shields.io/badge/Git-3766AB?style=flat&logo=Git&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Github-3766AB?style=flat&logo=Github&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Postman-3766AB?style=flat&logo=Postman&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Trello-3766AB?style=flat&logo=Trello&logoColor=white"/>
 
 <img width="1859" alt="스크린샷 2021-06-18 오전 7 28 39" src="https://user-images.githubusercontent.com/8219812/122530429-6cbe2700-d059-11eb-98e9-bdb8eebd4d94.png">
 
