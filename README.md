@@ -18,10 +18,10 @@
 
 <br>
 
-## 적용 기술 및 구현 기능
+## 사용 기술 및 구현 기능
 
 
-### 적용 기술
+### 사용 기술 및 tools
 > - Front-End : <img src="https://img.shields.io/badge/React.js-3766AB?style=flat&logo=React&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/React%20Router-3766AB?style=flat&logo=React-router&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/sass-3766AB?style=flat&logo=sass&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/ES6+-3766AB?style=flat&logo=ES6+&logoColor=white"/>&nbsp;
 > - Back-End : <img src="https://img.shields.io/badge/Python-3.8-3766AB?style=flat&logo=Python&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Django-3.2.4-3766AB?style=flat&logo=Django&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Mysql-8.0-3766AB?style=flat&logo=Mysql&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Bcrypt-3.2-3766AB?style=flat&logo=PyJWT&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/PyJWT-2.1-3766AB?style=flat&logo=PyJWT&logoColor=white"/>
 > - Common : <img src="https://img.shields.io/badge/AWS-EC2-3766AB?style=flat&logo=Aws&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/AWS-RDS-3766AB?style=flat&logo=Aws&logoColor=white"/>&nbsp;
