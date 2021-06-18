@@ -19,6 +19,8 @@
 <br>
 
 ## 적용 기술 및 구현 기능
+<img src="https://img.shields.io/badge/Python-3.8-3766AB?style=flat&logo=Python&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Django-3.2-3766AB?style=flat&logo=Django&logoColor=white"/>
+
 
 ### 적용 기술
 > - Front-End : React.js, React-router, sass, ES6+
