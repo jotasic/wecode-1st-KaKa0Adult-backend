@@ -119,7 +119,9 @@ class OrderView(View):
                 order_item_count = OrderItem.objects.filter(
                     id__in              = order_item_list,
                     order__user         = request.user,
-                    order__order_status = OrderStatus.BASKET).count()
+                    order__order_status = OrderStatus.BASKET,
+                    selected            = True
+                    ).count()
 
                 if order_item_count != len(order_item_list):
                     return JsonResponse({'message':'INVALID_ORDER_ITEM'}, status=400)
