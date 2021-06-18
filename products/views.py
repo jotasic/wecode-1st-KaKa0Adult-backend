@@ -45,10 +45,10 @@ class ProductListView(View):
     @login_decorator
     def get(self, request):
         order_conditions = {
-            'new'       : '-created_at',
-            'popular'   : '-count',
-            'unpopular' : 'count',
-            'old'       : 'created_at',
+            'newList'   : '-created_at',
+            'oldList'   : 'created_at',
+            'hot'       : '-count',
+            'unhot'     : 'count',
             'highPrice' : '-price',
             'lowPrice'  : 'price',
             'bestSell'  : '-sell_count',
@@ -99,7 +99,7 @@ class ProductListView(View):
                 'cart'  : product.orderitem_set.filter(
                     order__user            = user,
                     order__order_status_id = OrderStatus.BASKET).exists(),
-                'image' : product.imageurl_set.order_by('id')[0].url
+                'image' : product.imageurl_set.order_by('-created_at')[0].url
                 } for product in filtered_products]
         }
 
