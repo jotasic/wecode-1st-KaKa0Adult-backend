@@ -1,4 +1,5 @@
 from django.db import models
+from .managers import ProductManager
 
 class User(models.Model):
     nickname     = models.CharField(max_length=30, unique=True)
@@ -9,6 +10,9 @@ class User(models.Model):
     birth        = models.CharField(max_length=12)
     like         = models.ManyToManyField('products.Product', through='Like')
 
+    objects = models.Manager()
+    manager = ProductManager()
+    
     class Meta:
         db_table = 'users'
 
