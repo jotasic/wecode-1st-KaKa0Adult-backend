@@ -2,7 +2,7 @@ import math
 
 from django.http.response         import Http404, JsonResponse
 from django.views                 import View
-from django.db.models             import Count, Avg, Q
+from django.db.models             import Count, Avg, Q, Exists
 from django.shortcuts             import get_object_or_404
 
 from products.models              import Product
@@ -45,10 +45,10 @@ class ProductListView(View):
     @login_decorator
     def get(self, request):
         order_conditions = {
-            'newList'   : '-created_at',
-            'oldList'   : 'created_at',
-            'hot'       : '-count',
-            'unhot'     : 'count',
+            'new'       : '-created_at',
+            'old'       : 'created_at',
+            'popular'   : '-count',
+            'unpopular' : 'count',
             'highPrice' : '-price',
             'lowPrice'  : 'price',
             'bestSell'  : '-sell_count',
@@ -74,7 +74,7 @@ class ProductListView(View):
             q &= Q(name__icontains=search)
 
         filtered_products = Product.objects.filter(
-            q).annotate(count=Count("like__product_id")).order_by(
+            q).select_related('category', 'character').prefetch_related('imageurl_set', 'user_set', 'orderitem_set__order').annotate(count=Count('like__product_id')).order_by(
                 order_conditions.get(order, 'id'))
         
         total_count = filtered_products.count()
@@ -97,9 +97,8 @@ class ProductListView(View):
                 'stock' : product.stock,
                 'like'  : product.user_set.filter(id=user.id).exists(),
                 'cart'  : product.orderitem_set.filter(
-                    order__user            = user,
-                    order__order_status_id = OrderStatus.BASKET).exists(),
-                'image' : product.imageurl_set.order_by('-created_at')[0].url
+                    order__order_status_id = OrderStatus.BASKET).select_related('order').exists(),
+                'image' : product.imageurl_set.all()[0].url
                 } for product in filtered_products]
         }
 
