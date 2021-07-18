@@ -1,0 +1,45 @@
+version: "3"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-dev
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: always
+    environment:
+      SQL_ENGINE: django.db.backends.mysql
+      SQL_HOST: db
+      SQL_PORT: 3306
+      SQL_DATABASE: kakao_pet_shop
+      SQL_USER: kakao_pet_shop_user
+      SQL_PASSWORD: kakao_pet_shop_password
+      DJANGO_SETTINGS_MODULE: kaka0Adult.settings.dev
+    env_file:
+      - .dockerenv.server.dev
+    command:
+      - bash
+      - -c
+      - |
+        python manage.py wait_for_db -t 120
+        python manage.py migrate
+        python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app/
+  db:
+    image: mysql
+    ports:
+      - "3306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./db_data:/var/lib/mysql:rw
+    environment:
+      MYSQL_DATABASE: kakao_pet_shop
+      MYSQL_USER: kakao_pet_shop_user
+      MYSQL_PASSWORD: kakao_pet_shop_password
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1

@@ -1,13 +1,13 @@
 import json, re, bcrypt, jwt
 
+from django.conf      import settings
 from django.views     import View
 from django.http      import JsonResponse
 from django.db.models import Q
 
-from products.models     import Product
-from .models             import User, Like
-from users.utils         import login_decorator
-from kaka0Adult.settings import SECRET_KEY, ALGORITHM
+from products.models  import Product
+from .models          import User, Like
+from users.utils      import login_decorator
 
 class SignupView(View):
     def post(self, request):
@@ -64,7 +64,7 @@ class LoginView(View):
             if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
                 return JsonResponse({'message':'INVALID_USER'},status=401)
 
-            access_token = jwt.encode({'id':user.id}, SECRET_KEY,ALGORITHM)
+            access_token = jwt.encode({'id':user.id}, settings.SECRET_KEY, settings.ALGORITHM)
             
             return JsonResponse({'message':'LOGIN_SUCCESS','token':access_token,'user_name':user.nickname}, status=200)
 
