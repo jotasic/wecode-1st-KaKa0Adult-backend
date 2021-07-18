@@ -9,26 +9,55 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import os
+
 from pathlib import Path
 
-from my_settings import ALGORITHM, SECRET_KEY, DATABASES, LOGGING
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+from django.core.exceptions import ImproperlyConfigured
+
+def get_env_variable(var_name):
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = f'Set the {var_name} environment variable'
+        raise ImproperlyConfigured(error_msg)
+
+def is_aws_linux_ec2():
+    """Detect if we are running on an EC2 Linux Instance
+       See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+    """
+    if os.path.isfile("/sys/hypervisor/uuid"):
+        with open("/sys/hypervisor/uuid") as f:
+            uuid = f.read()
+            return uuid.startswith("ec2")
+    return False
+
+def get_aws_linux_ec2_private_ip():
+    """Get the private IP Address of the machine if running on an EC2 linux server"""
+    from urllib.request import urlopen
+    if not is_aws_linux_ec2():
+        return None
+    try:
+        response = urlopen('http://169.254.169.254/latest/meta-data/local-ipv4')
+        ec2_ip = response.read().decode('utf-8')
+        if response:
+            response.close()
+        return ec2_ip
+    except Exception as e:
+        print(e)
+        return None
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-ALGORITHM = ALGORITHM
 
 # Application definition
 
@@ -43,7 +72,7 @@ INSTALLED_APPS = [
     'users',
     'products',
     'orders',
-    'rest_framework',
+    'core',
     'django_extensions',
 ]
 
@@ -77,13 +106,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'kaka0Adult.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-DATABASES = DATABASES
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -155,5 +177,3 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
-
-LOGGING = LOGGING

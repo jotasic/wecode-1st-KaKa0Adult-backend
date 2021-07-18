@@ -343,3 +343,9 @@ my_settings.py
 db_uploader.py
 
 .vscode/launch.json
+
+my_settingss.py
+
+db_data
+
+.dockerenv.server.dev

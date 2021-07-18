@@ -1,0 +1,29 @@
+FROM python:3.8
+ARG ARG_DJANGO_ALGORITHM=ARG_DJANGO_ALGORITHM
+ARG ARG_DJANGO_SECRECT_KEY=ARG_DJANGO_SECRECT_KEY
+ARG ARG_SQL_HOST=ARG_SQL_HOST
+ARG ARG_SQL_PASSWORD=ARG_SQL_PASSWORD
+
+ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE="kaka0Adult.settings.prod"
+ENV SQL_ENGINE="django.db.backends.mysql"
+ENV SQL_PORT="3306"
+ENV SQL_DATABASE="kakao"
+ENV SQL_USER="root"
+ENV DJANGO_SECRECT_KEY=$ARG_DJANGO_SECRECT_KEY
+ENV DJANGO_ALGORITHM=$ARG_DJANGO_ALGORITHM
+ENV SQL_HOST=$ARG_SQL_HOST
+ENV SQL_PASSWORD=$ARG_SQL_PASSWORD
+
+WORKDIR  /usr/src/app
+COPY . /usr/src/app
+
+RUN echo $SQL_HOST
+RUN echo $SQL_PASSWORD
+RUN echo $ALGORITHM
+
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \
+    gcc libgraphviz-dev default-libmysqlclient-dev
+RUN pip install -r requirements.txt
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8000", "kaka0Adult.wsgi:application"]
