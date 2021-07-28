@@ -64,9 +64,9 @@ pipeline {
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
         stage('3.Prod Deploy') {
-            when {
-                branch 'main'
-            }
+            // when {
+            //     branch 'main'
+            // }
             steps{
                 withCredentials([string(credentialsId: "KAKAO_PET_SHOP_SQL_HOST", variable: "SQL_HOST"), string(credentialsId: "KAKAO_PET_SHOP_SQL_PASSWORD", variable: "SQL_PASSWORD"), usernamePassword(credentialsId: 'DOCKER_ACCOUNT', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD'), string(credentialsId: "KAKAO_PET_SHOP_DJANGO_SECRECT_KEY", variable: "DJANGO_SECRECT_KEY"), string(credentialsId: "KAKAO_PET_SHOP_ALGORITHM", variable: "DJANGO_ALGORITHM")]){
 
