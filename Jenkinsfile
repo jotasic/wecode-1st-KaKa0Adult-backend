@@ -19,7 +19,7 @@ pipeline {
 //////////////////////////////////////////////////////////////////////////////
         stage('1.Environment Setup') {
             steps {
-                slackSend(channel: 'jenkins', color: '#0064f0', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+                slackSend (channel: 'jenkins', color: '#0064f0', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
                 sh 'pip install -r requirements.txt'
             }
 
@@ -151,10 +151,10 @@ pipeline {
 //////////////////////////////////////////////////////////////////////////////
     post {
         success { 
-            slackSend(channel: 'jenkins', color:'#00c800', message: "SUCCESS: JOB '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            slackSend (channel: 'jenkins', color:'#00c800', message: "SUCCESS: JOB '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
         }
         failure {
-            slackSend(channel: 'jenkins', color:'#dc0000', message: "FAILED: JOB '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            slackSend (channel: 'jenkins', color:'#dc0000', message: "FAILED: JOB '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
         }
     }
 }
