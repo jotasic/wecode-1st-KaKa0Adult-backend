@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             alwaysPull true
-            image "burnkim61/jenkins-djnago-build"
+            image "burnkim61/jenkins-django-build"
             args "-u root:root"
         }
     }
