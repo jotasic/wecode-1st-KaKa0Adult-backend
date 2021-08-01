@@ -136,7 +136,6 @@ pipeline {
                         done
 
                     """
-                    }
                 }
             }
         }
