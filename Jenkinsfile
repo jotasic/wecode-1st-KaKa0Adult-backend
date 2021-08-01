@@ -19,8 +19,7 @@ pipeline {
 //////////////////////////////////////////////////////////////////////////////
         stage('1.Environment Setup') {
             steps {
-                slackSend channel: 'jenkins', color: '#0064f0', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
-
+                slackSend(channel: 'jenkins', color: '#0064f0', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
                 sh 'pip install -r requirements.txt'
             }
 
@@ -36,8 +35,11 @@ pipeline {
         stage('2.Test') {
             steps {
 
-                withCredentials([string(credentialsId: "KAKAO_PET_SHOP_DJANGO_SECRECT_KEY", variable: "DJANGO_SECRECT_KEY"), string(credentialsId: "KAKAO_PET_SHOP_ALGORITHM", variable: "DJANGO_ALGORITHM")]) {
-                    sh 'python manage.py test --settings=kaka0Adult.settings.prod'
+                withCredentials([ \
+                    string(credentialsId: "KAKAO_PET_SHOP_DJANGO_SECRECT_KEY", variable: "DJANGO_SECRECT_KEY"), \
+                    string(credentialsId: "KAKAO_PET_SHOP_ALGORITHM", variable: "DJANGO_ALGORITHM") \
+                    ]) {
+                        sh 'python manage.py test --settings=kaka0Adult.settings.prod'
                 }
             }
         }
@@ -72,28 +74,52 @@ pipeline {
 //////////////////////////////////////////////////////////////////////////////
 
         stage('4.Prod Deploy') {
-            when {
-                branch 'main'
-            }
+            // when {
+            //     branch 'main'
+            // }
             steps{
-                withCredentials([string(credentialsId: "KAKAO_PET_SHOP_SQL_HOST", variable: "SQL_HOST"), string(credentialsId: "KAKAO_PET_SHOP_SQL_PASSWORD", variable: "SQL_PASSWORD"), usernamePassword(credentialsId: 'DOCKER_ACCOUNT', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD'), string(credentialsId: "KAKAO_PET_SHOP_DJANGO_SECRECT_KEY", variable: "DJANGO_SECRECT_KEY"), string(credentialsId: "KAKAO_PET_SHOP_ALGORITHM", variable: "DJANGO_ALGORITHM")]){
+                withCredentials([ \
+                    string(credentialsId: "KAKAO_PET_SHOP_SQL_HOST", variable: "SQL_HOST"), \
+                    string(credentialsId: "KAKAO_PET_SHOP_SQL_PASSWORD", variable: "SQL_PASSWORD"), \
+                    string(credentialsId: "KAKAO_PET_SHOP_DJANGO_SECRECT_KEY", variable: "DJANGO_SECRECT_KEY"),  \
+                    string(credentialsId: "KAKAO_PET_SHOP_ALGORITHM", variable: "DJANGO_ALGORITHM"), \
+                    string(credentialsId: "AWS_CLI_ACCESS_KEY", variable: "AWS_CLI_ACCESS_KEY"), \
+                    string(credentialsId: "AWS_CLI_SECRET_ACCESS_KEY", variable: "AWS_CLI_SECRET_ACCESS_KEY"), \
+                    usernamePassword(credentialsId: 'DOCKER_ACCOUNT', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD') \
+                ]){
 
 //////////////////////////////////////////////////////////////////////////////
 // Make Docker image                                                        //
 //////////////////////////////////////////////////////////////////////////////
-                    sh 'docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"'
-                    sh 'docker build --build-arg ARG_DJANGO_ALGORITHM="$DJANGO_ALGORITHM" --build-arg ARG_DJANGO_SECRECT_KEY="$DJANGO_SECRECT_KEY" --build-arg ARG_SQL_HOST="$SQL_HOST" --build-arg ARG_SQL_PASSWORD="$SQL_PASSWORD" --no-cache -t "$DOCKER_USERNAME"/kakao-pet-shop-prod:"$BUILD_NUMBER" -f ./Dockerfile/Dockerfile-prod .'
-                    sh 'docker push "$DOCKER_USERNAME"/kakao-pet-shop-prod:"$BUILD_NUMBER"'
+                    sh """
+                        docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+
+                        docker build --no-cache \
+                        --build-arg ARG_DJANGO_ALGORITHM="$DJANGO_ALGORITHM" 
+                        --build-arg ARG_DJANGO_SECRECT_KEY="$DJANGO_SECRECT_KEY" \
+                        --build-arg ARG_SQL_HOST="$SQL_HOST" \
+                        --build-arg ARG_SQL_PASSWORD="$SQL_PASSWORD" \
+                        -t "$DOCKER_USERNAME"/kakao-pet-shop-prod:"${env.BUILD_NUMBER}" \
+                        -f ./Dockerfile/Dockerfile-prod .
+
+                        docker push "$DOCKER_USERNAME"/kakao-pet-shop-prod:"${env.BUILD_NUMBER}"
+                    """
 
 //////////////////////////////////////////////////////////////////////////////
 //  Deploy Docker image to EC2 servers                                      //
 //////////////////////////////////////////////////////////////////////////////
+                    sh """
+                        aws configure set region us-west-2
+                        aws configure set aws_access_key_id $AWS_CLI_ACCESS_KEY
+                        aws configure set aws_secret_access_key $AWS_CLI_SECRET_ACCESS_KEY
+                    """
 
                     sh """
                         aws ec2 describe-instances \
                         --filters "Name=tag-value,Values=backend-server*"  \
                         --query 'Reservations[*].Instances[*].[PrivateIpAddress]' \
                         --output text > ips.txt
+
                         echo "Private IP Address:\n"
                         cat ips.txt
                     """
@@ -101,11 +127,13 @@ pipeline {
                     sh """
                         cat ips.txt | while read ip
                         do
-                            echo ">>> Start Deployment Server: \$ip <<<" 
+                            echo ">>> Start Deployment Server: \$ip" 
                             ssh -o ConnectTimeout=10 -o BatchMode=yes -o StricHostKeyCheking=no ubuntu@\$ip /bin/bash -s<<-'EOF'
-                            (docker ps -a -q) ; if [ -n \"$CONTAINERS\" ]; then docker stop  $CONTAINERS ; fi
+                            (docker ps -a -q) ; if [ -n \$CONTAINERS ]; then docker stop  \$CONTAINERS ; fi
                             docker rmi $(docker images -aq)
-                            docker run -d --restart=unless-stopped --rm -p 8000:8000 --name=kakao_pet_shop -v ./log:/usr/src/app/log ' + DOCKER_USERNAME +'/kakao-pet-shop-prod:${env.BUILD_NUMBER}'
+                            docker run -d --restart=unless-stopped --rm -p 8000:8000 --name=kakao_pet_shop -v log:/usr/src/app/log $DOCKER_USERNAME/kakao-pet-shop-prod:${env.BUILD_NUMBER}'
+                            echo ">>> Done Deployment Server: \$ip"
+                        done
 
                     """
                     }
@@ -123,10 +151,10 @@ pipeline {
 //////////////////////////////////////////////////////////////////////////////
     post {
         success { 
-            slackSend channel: 'jenkins', color:'#00c800', message: "SUCCESS: JOB '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+            slackSend(channel: 'jenkins', color:'#00c800', message: "SUCCESS: JOB '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
         }
         failure {
-            slackSend channel: 'jenkins', color:'#dc0000', message: "FAILED: JOB '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+            slackSend(channel: 'jenkins', color:'#dc0000', message: "FAILED: JOB '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
         }
     }
 }
