@@ -31,7 +31,8 @@ RUN sudo apt update -y \
     && python3.8 -mpip install --upgrade pip
 
 ## Register shortcut python command 
-RUN echo "alias python=python3" >> ~/.bashrc
+RUN echo "alias python=python3.8" >> ~/.bashrc
+RUN ["/bin/bash", "-c", "source ~/.bashrc"]
 
 ## Install Docker
 RUN sudo apt install -y curl
