@@ -42,7 +42,7 @@ pipeline {
                         sh """
 		                    sudo service mysql start
 		                    sudo mysql -uroot -e "UPDATE mysql.user SET authentication_string=PASSWORD('password') WHERE User='root'; FLUSH PRIVILEGES;"
-                            python3.8 manage.py test --settings=kaka0Adult.settings.prod
+                            python3.8 manage.py test --settings=kaka0Adult.settings.dev
                         """
                 }
             }
@@ -159,6 +159,11 @@ pipeline {
         }
         failure {
             slackSend (channel: 'jenkins', color:'#dc0000', message: "FAILED: JOB '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+        always{
+            sh """
+                docker system prune -af
+            """
         }
     }
 }

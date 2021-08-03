@@ -3,6 +3,7 @@ FROM ubuntu:18.04
 # Setting Up ENV
 ENV DJANGO_SETTINGS_MODULE="kaka0Adult.settings.prod"
 ENV SQL_ENGINE="django.db.backends.mysql"
+ENV SQL_HOST="localhost"
 ENV SQL_PORT="3306"
 ENV SQL_DATABASE="kakao"
 ENV SQL_USER="root"
