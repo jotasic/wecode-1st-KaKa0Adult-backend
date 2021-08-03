@@ -160,10 +160,5 @@ pipeline {
         failure {
             slackSend (channel: 'jenkins', color:'#dc0000', message: "FAILED: JOB '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
         }
-        always{
-            sh """
-                docker system prune -af
-            """
-        }
     }
 }
