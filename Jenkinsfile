@@ -39,7 +39,11 @@ pipeline {
                     string(credentialsId: "KAKAO_PET_SHOP_DJANGO_SECRECT_KEY", variable: "DJANGO_SECRECT_KEY"), \
                     string(credentialsId: "KAKAO_PET_SHOP_ALGORITHM", variable: "DJANGO_ALGORITHM") \
                     ]) {
-                        sh 'python3.8 manage.py test --settings=kaka0Adult.settings.prod'
+                        sh """
+		                    sudo service mysql start
+		                    sudo mysql -uroot -e "UPDATE mysql.user SET authentication_string=PASSWORD('password') WHERE User='root'; FLUSH PRIVILEGES;"
+                            python3.8 manage.py test --settings=kaka0Adult.settings.prod
+                        """
                 }
             }
         }
