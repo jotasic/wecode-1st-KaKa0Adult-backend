@@ -3,7 +3,7 @@ pipeline {
         docker {
             alwaysPull true
             image "burnkim61/jenkins-django-build"
-            args "-u root:root --privileged"
+            args "-u root:root --privileged -v /var/lib/docker:/var/lib/docker"
         }
     }
     stages {
