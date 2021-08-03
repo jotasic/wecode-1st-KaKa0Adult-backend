@@ -1,7 +1,7 @@
 from .base   import *
 
 SECRET_KEY = get_env_variable('DJANGO_SECRECT_KEY')
-ALGORITHM = get_env_variable('ALGORITHM')
+ALGORITHM = get_env_variable('DJANGO_ALGORITHM')
 DEBUG      = True
 
 DATABASES = {

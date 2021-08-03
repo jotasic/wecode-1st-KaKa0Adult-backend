@@ -37,7 +37,7 @@ pipeline {
             steps {
                 withCredentials([ \
                     string(credentialsId: "KAKAO_PET_SHOP_DJANGO_SECRECT_KEY", variable: "DJANGO_SECRECT_KEY"), \
-                    string(credentialsId: "KAKAO_PET_SHOP_ALGORITHM", variable: "DJANGO_ALGORITHM") \
+                    string(credentialsId: "KAKAO_PET_SHOP_ALGORITHM", variable: "ALGORITHM") \
                     ]) {
                         sh """
 		                    sudo service mysql start
