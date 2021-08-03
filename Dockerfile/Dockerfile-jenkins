@@ -44,7 +44,7 @@ RUN echo "alias python=python3.8" >> ~/.bashrc
 RUN ["/bin/bash", "-c", "source ~/.bashrc"]
 
 ## Install Docker
-RUN sudo apt install -y curl systemd
+RUN sudo apt install -y curl
 RUN curl -fsSL https://get.docker.com -o get-docker.sh
 RUN sudo sh get-docker.sh
 

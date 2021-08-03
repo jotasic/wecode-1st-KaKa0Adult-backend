@@ -3,7 +3,7 @@ pipeline {
         docker {
             alwaysPull true
             image "burnkim61/jenkins-django-build"
-            args "-u root:root"
+            args "-u root:root --privileged"
         }
     }
     stages {
@@ -96,8 +96,7 @@ pipeline {
 // Make Docker image                                                        //
 //////////////////////////////////////////////////////////////////////////////
                     sh """
-                        sudo apt-get install systemd
-                        sudo systemctl start docker
+                        sudo service start docker 
                         
                         docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 
