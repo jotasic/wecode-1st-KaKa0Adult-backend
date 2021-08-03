@@ -96,7 +96,8 @@ pipeline {
 // Make Docker image                                                        //
 //////////////////////////////////////////////////////////////////////////////
                     sh """
-                        sudo service docker start
+                        sudo apt-get install systemd
+                        sudo systemctl start docker
                         
                         docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 
