@@ -96,17 +96,19 @@ pipeline {
 // Make Docker image                                                        //
 //////////////////////////////////////////////////////////////////////////////
                     sh """
-                        docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+                        sudo service docker start
+                        
+                        docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
 
                         docker build --no-cache \
-                        --build-arg ARG_DJANGO_ALGORITHM="$DJANGO_ALGORITHM"  \
-                        --build-arg ARG_DJANGO_SECRECT_KEY="$DJANGO_SECRECT_KEY" \
-                        --build-arg ARG_SQL_HOST="$SQL_HOST" \
-                        --build-arg ARG_SQL_PASSWORD="$SQL_PASSWORD" \
-                        -t "$DOCKER_USERNAME"/kakao-pet-shop-prod:"${env.BUILD_NUMBER}" \
+                        --build-arg ARG_DJANGO_ALGORITHM="${DJANGO_ALGORITHM}"  \
+                        --build-arg ARG_DJANGO_SECRECT_KEY="${DJANGO_SECRECT_KEY}" \
+                        --build-arg ARG_SQL_HOST="${SQL_HOST}" \
+                        --build-arg ARG_SQL_PASSWORD="{$SQL_PASSWORD}" \
+                        -t "${DOCKER_USERNAME}"/kakao-pet-shop-prod:"${env.BUILD_NUMBER}" \
                         -f ./Dockerfile/Dockerfile-prod .
 
-                        docker push "$DOCKER_USERNAME"/kakao-pet-shop-prod:"${env.BUILD_NUMBER}"
+                        docker push "${DOCKER_USERNAME}"/kakao-pet-shop-prod:"${env.BUILD_NUMBER}"
                     """
 
 //////////////////////////////////////////////////////////////////////////////
