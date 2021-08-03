@@ -96,7 +96,7 @@ pipeline {
 // Make Docker image                                                        //
 //////////////////////////////////////////////////////////////////////////////
                     sh """
-                        sudo service start docker 
+                        sudo service docker start 
                         
                         docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 
