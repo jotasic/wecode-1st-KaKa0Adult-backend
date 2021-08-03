@@ -42,7 +42,7 @@ pipeline {
                         sh """
 		                    sudo service mysql start
 		                    sudo mysql -uroot -e "UPDATE mysql.user SET authentication_string=PASSWORD('password') WHERE User='root'; FLUSH PRIVILEGES;"
-                            python3.8 manage.py test --settings=kaka0Adult.settings.dev
+                            python3.8 manage.py test --settings=kaka0Adult.settings.jenkins
                         """
                 }
             }
@@ -99,7 +99,7 @@ pipeline {
                         docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 
                         docker build --no-cache \
-                        --build-arg ARG_DJANGO_ALGORITHM="$DJANGO_ALGORITHM" 
+                        --build-arg ARG_DJANGO_ALGORITHM="$DJANGO_ALGORITHM"  \
                         --build-arg ARG_DJANGO_SECRECT_KEY="$DJANGO_SECRECT_KEY" \
                         --build-arg ARG_SQL_HOST="$SQL_HOST" \
                         --build-arg ARG_SQL_PASSWORD="$SQL_PASSWORD" \

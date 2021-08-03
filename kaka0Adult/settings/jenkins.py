@@ -2,12 +2,18 @@ from .base   import *
 
 SECRET_KEY = get_env_variable('DJANGO_SECRECT_KEY')
 ALGORITHM = get_env_variable('DJANGO_ALGORITHM')
-
-TEST_RUNNER = 'kaka0Adult.test_runner.TestNoDBRunner'
+DEBUG      = True
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    'default' : {
+        'ENGINE': get_env_variable('SQL_ENGINE'),
+        'NAME': get_env_variable('SQL_DATABASE'),
+        'USER': get_env_variable('SQL_USER'),
+        'PASSWORD': get_env_variable('SQL_PASSWORD'),
+        'HOST':  get_env_variable('SQL_HOST'),
+        'PORT': get_env_variable('SQL_PORT'),
+        'OPTIONS' : {
+            'charset' : 'utf8mb4'
+        }
     }
 }
