@@ -32,6 +32,14 @@
 
 [AQueryTool(pw:bup04w)](https://aquerytool.com:443/aquerymain/index/?rurl=5a275d62-5fd7-44b5-ad51-f9ba875ceb01)
 
+### 배포 환경
+![image](https://user-images.githubusercontent.com/8219812/128143171-3367448e-96cc-416a-9d93-d2b151853f84.png)
+
+### 서버 구성
+![image](https://user-images.githubusercontent.com/8219812/128143284-6e03e5c3-f367-4f79-8598-24a24723571c.png)
+
+
+
 ### 구현 기능
 
 #### Users app
