@@ -4,7 +4,7 @@ pipeline {
             alwaysPull true
             image "burnkim61/jenkins-django-build"
             args "-u root:root -v /var/run/docker.sock:/var/run/docker.sock"
-            
+
         }
     }
     stages {
@@ -135,12 +135,12 @@ pipeline {
                         cat ips.txt | while read ip
                         do
                             echo ">>> Start Deployment Server: \$ip" 
-                            ssh -o ConnectTimeout=10 -o BatchMode=yes -o StrictHostkeyChecking=no ubuntu@\$ip /bin/bash -s<<-'EOF'
+                            ssh -o ConnectTimeout=10 -o BatchMode=yes -o StrictHostkeyChecking=no backend-server@\$ip /bin/bash -s<<-'EOF'
                             (docker ps -a -q) ; if [ -n \$CONTAINERS ]; then docker stop  \$CONTAINERS ; fi
                             docker rmi \$(docker images -aq)
                             docker run -d --restart=unless-stopped --rm -p 8000:8000 --name=kakao_pet_shop -v log:/usr/src/app/log $DOCKER_USERNAME/kakao-pet-shop-prod:${env.BUILD_NUMBER}
-
                             echo ">>> Done Deployment Server: \$ip"
+                        EOF
                         done
 
                     """
