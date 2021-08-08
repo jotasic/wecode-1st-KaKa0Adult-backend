@@ -18,9 +18,7 @@ ENV SQL_PASSWORD=$ARG_SQL_PASSWORD
 WORKDIR  /usr/src/app
 COPY . /usr/src/app
 
-RUN echo $SQL_HOST
-RUN echo $SQL_PASSWORD
-RUN echo $ALGORITHM
+RUN mkdir log
 
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \

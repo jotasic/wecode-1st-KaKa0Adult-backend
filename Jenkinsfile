@@ -90,7 +90,7 @@ pipeline {
                             remote.user = userName 
                             remote.identityFile = identity
                             def ips = SERVER_IPS.split(',')
-                            def cmd = 'docker run -d --rm -p 8000:8000 --name kakao_pet_shop -v ./log:/usr/src/app/log ' + DOCKER_USERNAME +'/kakao-pet-shop-prod:' + BUILD_NUMBER
+                            def cmd = 'docker run -d --rm -p 8000:8000 --name kakao_pet_shop -v log:/usr/src/app/log ' + DOCKER_USERNAME +'/kakao-pet-shop-prod:' + BUILD_NUMBER
                             
                             ips.each { ip ->
                                 remote.host = ip 
