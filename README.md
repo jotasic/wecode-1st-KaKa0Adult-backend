@@ -39,7 +39,6 @@
 ![image](https://user-images.githubusercontent.com/8219812/128143284-6e03e5c3-f367-4f79-8598-24a24723571c.png)
 
 
-
 ### 구현 기능
 
 #### Users app
@@ -59,7 +58,26 @@
 - user의 장바구니에 담긴 상품리스트 제공
 - 장바구니에서 결제 `transaction`을 이용한 데이터의 무결성을 유지하도록 구현
 
-<br>
+## Prerequisite
+.dockerenv.server.dev : Django 환경 설정을 위한 파일
+```
+DJANGO_SECRECT_KEY="xxxxxxxx"   # Django 시크릿 키
+DJANGO_ALGORITHM="xxxxxxxxx"    # User Token 발생시 사용할 암호화 알고리즘 명
+```
+* 암호화 알고리즘명은 아래 링크  
+https://pyjwt.readthedocs.io/en/latest/algorithms.html
+
+## Usage
+1. 이 프로젝트를 로컬 저장소에 클론을 한다.
+git clone .....
+2. 프로젝트 위치에 .dockerenv.server.dev 파일을 붙여 넣는다.
+3. docker-compose up 을 통해서 실행을 시킨다.
+
+## API
+https://www.postman.com/wecode-21-1st-kaka0/workspace/21-kaka0-pet-shop/overview
+
+## Note
+- `로그인된 상태`에서만 서비스를 이용할 있도록 구성함
 
 ## Reference
 
