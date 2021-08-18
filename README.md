@@ -22,14 +22,20 @@
 ## 프로젝트 정보
 
 ### 사용 기술 및 tools
-> - Front-End :  <img src="https://img.shields.io/badge/ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/React.js-61DAFB?style=for-the-badge&logo=React&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/React%20Router-CA4245?style=for-the-badge&logo=React-router&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/sass-CC6699?style=for-the-badge&logo=sass&logoColor=white"/>
 > - Back-End :  <img src="https://img.shields.io/badge/Python 3.8-3776AB?style=for-the-badge&logo=Python&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Django 3.2.4-092E20?style=for-the-badge&logo=Django&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Mysql 8.0-4479A1?style=for-the-badge&logo=Mysql&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/PyJWT 2.1-000000?style=for-the-badge&logo=JsonWebTokens&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Bcrypt 3.2-338000?style=for-the-badge&logo=PyJWT&logoColor=white"/>
 > - Common : <img src="https://img.shields.io/badge/AWS RDS/EC2-232F3E?style=for-the-badge&logo=Amazon&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Docker-0052CC?style=for-the-badge&logo=Docker&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Jenkins-F05032?style=for-the-badge&logo=Jenkins&logoColor=white"/>
 > - ETC :  <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Trello-0052CC?style=for-the-badge&logo=Trello&logoColor=white"/>
 
+
+### Modeling
 <img width="1859" alt="스크린샷 2021-06-18 오전 7 28 39" src="https://user-images.githubusercontent.com/8219812/122530429-6cbe2700-d059-11eb-98e9-bdb8eebd4d94.png">
 
+![image](https://user-images.githubusercontent.com/8219812/129869802-785f3b50-28bb-43d1-8d9f-a060291c5bb0.png)
+
 [AQueryTool(pw:bup04w)](https://aquerytool.com:443/aquerymain/index/?rurl=5a275d62-5fd7-44b5-ad51-f9ba875ceb01)
+
+### API
+https://www.postman.com/wecode-21-1st-kaka0/workspace/21-kaka0-pet-shop/overview
 
 ### 배포 환경
 ![image](https://user-images.githubusercontent.com/8219812/128143171-3367448e-96cc-416a-9d93-d2b151853f84.png)
@@ -38,7 +44,13 @@
 ![image](https://user-images.githubusercontent.com/8219812/128143284-6e03e5c3-f367-4f79-8598-24a24723571c.png)
 
 
+
 ### 구현 기능
+
+#### 🙋‍♂️ Products app - 담당업무
+- 조건에 맞게 쿼리파라미터를 받아서 `Q객체`를 이용한 상품 필터링 및 정렬 (신상품, 인기상품, 검색, 카테고리, 캐릭터)
+- 쿼리파라미터를 이용한 페이징 기능
+- 한 개의 상품에 대한 상세 정보 제공
 
 #### Users app
 
@@ -46,11 +58,6 @@
 - `JWT`를 이용한 User정보 토큰발생
 - 상품을 좋아요 할 수 있는 기능 및 제거
 - user의 좋아요 상품리스트 제공
-
-#### 🙋‍♂️ Products app - 담당업무
-- 조건에 맞게 쿼리파라미터를 받아서 `Q객체`를 이용한 상품 필터링 및 정렬 (신상품, 인기상품, 검색, 카테고리, 캐릭터)
-- 쿼리파라미터를 이용한 페이징 기능
-- 한 개의 상품에 대한 상세 정보 제공
 
 #### Orders app
 - 장바구니 추가, 삭제, 업데이트 기능
@@ -63,7 +70,7 @@
 DJANGO_SECRECT_KEY="xxxxxxxx"   # Django 시크릿 키
 DJANGO_ALGORITHM="xxxxxxxxx"    # User Token 발생시 사용할 암호화 알고리즘 명
 ```
-* 암호화 알고리즘명은 아래 링크  
+* 암호화 알고리즘명은 아래 링크 참고
 https://pyjwt.readthedocs.io/en/latest/algorithms.html
 
 ### Usage
@@ -71,9 +78,6 @@ https://pyjwt.readthedocs.io/en/latest/algorithms.html
 git clone .....
 2. 프로젝트 위치에 .dockerenv.server.dev 파일을 붙여 넣는다.
 3. docker-compose up 을 통해서 실행을 시킨다.
-
-### API
-https://www.postman.com/wecode-21-1st-kaka0/workspace/21-kaka0-pet-shop/overview
 
 ## Reference
 
